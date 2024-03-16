@@ -1,0 +1,20 @@
+[
+    {
+        "FirstName": "Rahul",
+        "LastName": "Deshpande",
+        "UserId": "1",
+        "Email": "rahul.deshpande@gmai.com"
+    },
+    {
+        "FirstName": "Grant",
+        "LastName": "Cardone",
+        "UserId": 2,
+        "Email": "grantcardone@gcom"
+    },
+    {
+        "FirstName": "Tom",
+        "LastName": "Cruise",
+        "UserId": 3,
+        "Email": "grantcardone@gc.com"
+    }
+]
