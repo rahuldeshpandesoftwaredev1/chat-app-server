@@ -12,7 +12,8 @@ const { Socket } = require('dgram');
 
 const server = http.createServer(app);
 
-const DATA_FILE = path.join(__dirname, 'data.json');
+const DATA_FILE = path.join(__dirname, 'data/data.json');
+const MESSAGE_FILE = path.join(__dirname, 'data/messageData.json');
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(cors());
@@ -25,8 +26,14 @@ app.use((req, res, next) => {
   });
 
 app.get('/api/users', (req, res) => {
-    console.log(DATA_FILE);
     fs.readFile(DATA_FILE, (err, data) => {
+      res.setHeader('Cache-Control', 'no-cache');
+      res.json(JSON.parse(data));
+    });
+  });
+
+app.get('/api/messages', (req, res) => {
+    fs.readFile(MESSAGE_FILE, (err, data) => {
       res.setHeader('Cache-Control', 'no-cache');
       res.json(JSON.parse(data));
     });
@@ -51,6 +58,9 @@ io.on('connection', (socket) => {
     socket.on('join_room_finish', (data) => {
         console.log(`finishing joining for ${data.userId}`);
         socket.join(data.roomId);
+        console.log(`Sending event join_room_successful_${data.roomId}_${data.roomSourceUserId}`);
+        socket.broadcast.emit(`join_room_successful_${data.roomId}_${data.roomSourceUserId}`, data);
+
     });
 
     // Join room
@@ -58,7 +68,7 @@ io.on('connection', (socket) => {
         console.log(`joining room of d = ${data.roomId} for client = ${socket.id}`);
         socket.join(data.roomId);
         console.log(`Call please_join_room_${data.targetUserId}`);
-        socket.broadcast.emit(`please_join_room_${data.targetUserId}`, {roomId: data.roomId, sourceUser: data.sourceUser});
+        socket.broadcast.emit(`please_join_room_${data.targetUserId}`, {roomId: data.roomId, sourceUserId: data.sourceUserId});
     })
 
     // Send message to someone else in that room.
